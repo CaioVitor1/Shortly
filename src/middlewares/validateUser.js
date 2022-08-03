@@ -1,8 +1,9 @@
 import joi from 'joi';
 import connection from "../databases/postgres.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-
-export async function validateUser (req, res, next) {
+export async function validateCreateUser (req, res, next) {
     const {email} = req.body;
 
     const userSchema = joi.object({
@@ -15,7 +16,7 @@ export async function validateUser (req, res, next) {
 
     const { error } = userSchema.validate(req.body);
     if (error) {
-        res.status(401).send('Campos inválidos');
+        res.status(422).send('Campos inválidos');
         return;
     } 
 
@@ -28,10 +29,37 @@ export async function validateUser (req, res, next) {
 }
 
 
-export async function loginUser (req, res, next) {
-    try{
+export async function validateLogin (req, res, next) {
+   
+        const {email, password } = req.body;
 
-    } catch(erro) {
+        const userSchema = joi.object({
+            email: joi.string().email().required(),
+            password: joi.string().pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[$*&@#])[0-9a-zA-Z$*&@#]{8,}$/).required()
+        });
+    
+        const { error} = userSchema.validate(req.body);
+    
+        if (error) {
+            res.status(422).send('Campos inválidos');
+            return;
+        }
+        const {rows: searchEmail} = await connection.query('SELECT * FROM users WHERE email = $1', [email]);        
+        console.log(searchEmail[0].password)
+        if(searchEmail.length !== 0 && bcrypt.compareSync(password, searchEmail[0].password) ) {
+                                     
+            const chave = process.env.JWT_SECRET;
+            const configuracoes = { expiresIn: 60*60*24*30 }
+            const token = jwt.sign({ name: searchEmail[0].name }, chave, configuracoes); 
 
-    }
+            res.locals.session = {token, searchEmail};
+            next();
+
+        } else{
+            return res.status(401).send("Usuário/senha não cadastrados!")
+        }
+        
+
+
+
 }

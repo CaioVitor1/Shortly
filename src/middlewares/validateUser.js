@@ -45,12 +45,12 @@ export async function validateLogin (req, res, next) {
             return;
         }
         const {rows: searchEmail} = await connection.query('SELECT * FROM users WHERE email = $1', [email]);        
-        console.log(searchEmail[0].password)
+        
         if(searchEmail.length !== 0 && bcrypt.compareSync(password, searchEmail[0].password) ) {
                                      
             const chave = process.env.JWT_SECRET;
             const configuracoes = { expiresIn: 60*60*24*30 }
-            const token = jwt.sign({ name: searchEmail[0].name }, chave, configuracoes); 
+            const token = jwt.sign({ userId: searchEmail[0].id }, chave, configuracoes); 
 
             res.locals.session = {token, searchEmail};
             next();

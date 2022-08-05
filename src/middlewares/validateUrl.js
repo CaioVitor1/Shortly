@@ -1,16 +1,10 @@
 import joi from 'joi';
 import jwt from 'jsonwebtoken';
 import connection from "../databases/postgres.js";
-export async function validateUrlLink(req, res, next) {
-    try{
-        const urlSchema = joi.object({
-            url: joi.string().required()
-        });
-        const { error } = urlSchema.validate(req.body);
-        if (error) {
-            res.status(422).send('Campos inválidos');
-            return;
-        }
+
+export async function validateToken(req, res, next) {
+    try {
+        console.log("está aqui")
         const { authorization } = req.headers;
         const token = authorization?.replace('Bearer ', '');
 
@@ -19,8 +13,25 @@ export async function validateUrlLink(req, res, next) {
             if(!token || !userId) {
                 return res.sendStatus(401);
             }
-            console.log(userId)
+            console.log("o userId do token é: " + userId)
             res.locals.session = userId
+            next();
+        }catch(erro){
+            console.log(erro);
+            res.sendStatus(401);
+        }
+}
+
+export async function validateUrlLink(req, res, next) {
+    try{
+        const urlSchema = joi.object({
+        url: joi.string().required()
+        });
+        const { error } = urlSchema.validate(req.body);
+        if (error) {
+            res.status(422).send('Campos inválidos');
+            return;
+        }
         next();
     } catch(erro) {
         console.log(erro);
@@ -29,13 +40,4 @@ export async function validateUrlLink(req, res, next) {
    
 }
 
-export async function validateShortUrl(req, res, nexto) {
-    try{
-        
-        }
-        
-    catch(erro) {
-        console.log(erro);
-        res.status(500).send(erro)
-    }
-}
+

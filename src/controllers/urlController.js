@@ -12,7 +12,7 @@ export async function createShortlyUrl(req, res) {
         return res.status(201).send(shortUrl)
     }catch(erro) {
         console.log(erro);
-        res.sendStatus(500);
+        return res.sendStatus(500);
     }
 }
 
@@ -51,7 +51,7 @@ export async function visitUrl(req, res) {
         if(searchUrl.length === 0) {
             return res.sendStatus(404)
         }
-        const { visits, id } = searchUrl[0];
+        const { visits, id, url } = searchUrl[0];
         console.log(visits)
         const addVisit = visits + 1;
         console.log(addVisit)

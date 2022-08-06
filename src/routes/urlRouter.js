@@ -5,7 +5,6 @@ import { validateUrlLink, validateToken  } from '../middlewares/validateUrl.js';
 
 const router = Router();
 
-//router.post('/signup', validateCreateUser, createUser);
 router.post('/urls/shorten', validateToken, validateUrlLink ,createShortlyUrl);
 router.get('/urls/:id', getUrl);
 router.get('/urls/open/:shortUrl', visitUrl)

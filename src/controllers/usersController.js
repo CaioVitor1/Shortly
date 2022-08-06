@@ -27,3 +27,20 @@ export async function usersData(req, res) {
         return res.sendStatus(500);
     }
 }
+
+export async function getRanking(req, res) {
+    try{
+        //const {rows: qtdLinks} = await connection.query(`SELECT `)
+
+        const {rows: ranking} = await connection.query(`SELECT users.id, users.name, SUM(urls.visits) AS visitCount, COUNT(urls."userId") AS linksCount
+        FROM users JOIN urls 
+        ON users.id = urls."userId"
+        GROUP BY users.id
+        ORDER BY visitCount DESC
+        LIMIT 10;`)
+       return res.send(ranking)
+    }catch(erro) {
+        console.log(erro);
+        return res.sendStatus(500);
+    }
+}

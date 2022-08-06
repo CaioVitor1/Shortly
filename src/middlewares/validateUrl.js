@@ -15,6 +15,7 @@ export async function validateToken(req, res, next) {
             }
             console.log("o userId do token é: " + userId)
             res.locals.session = userId
+           
             next();
         }catch(erro){
             console.log(erro);
@@ -24,6 +25,8 @@ export async function validateToken(req, res, next) {
 
 export async function validateUrlLink(req, res, next) {
     try{
+        console.log("chegou aqui")
+        const userId = res.locals.session;
         const urlSchema = joi.object({
         url: joi.string().required()
         });
@@ -32,6 +35,7 @@ export async function validateUrlLink(req, res, next) {
             res.status(422).send('Campos inválidos');
             return;
         }
+        res.locals.session = userId
         next();
     } catch(erro) {
         console.log(erro);

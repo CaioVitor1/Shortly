@@ -4,7 +4,7 @@ export async function usersData(req, res) {
     try{
             const userId = res.locals.session;
             const {rows: visits} = await connection.query('SELECT urls.id, urls."shortUrl", urls.url, urls.visits AS visitCount FROM urls  WHERE "userId" = $1', [userId])
-            //console.log(visits)
+           
            if(visits.length === 0) {
             return res.status(401).send("Usuário não cadastrado")
            }
@@ -19,7 +19,7 @@ export async function usersData(req, res) {
                 "visitcount": sumall,
                 "shortenedUrls": visits
             }
-            return res.send(teste);
+            return res.status(200).send(teste);
 
 
     }catch(erro) {
@@ -37,7 +37,7 @@ export async function getRanking(req, res) {
         GROUP BY users.id
         ORDER BY visitCount DESC
         LIMIT 10;`)
-       return res.send(ranking)
+       return res.status(200).send(ranking)
     }catch(erro) {
         console.log(erro);
         return res.sendStatus(500);

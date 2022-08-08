@@ -58,7 +58,7 @@ export async function visitUrl(req, res) {
 
         const updateVisit = await connection.query(`UPDATE urls SET visits=${addVisit} WHERE id = $1;`, [id]);
 
-        return res.redirect(url)
+        return res.redirect(200, url)
         
        
     }catch(erro) {

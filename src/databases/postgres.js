@@ -10,7 +10,7 @@ const connection = new Pool({
     ssl: {
         rejectUnauthorized: false
     }
-}); 
+});  
 /*
 const connection = new Pool({
   user: process.env.POSTGRESS_USER,
